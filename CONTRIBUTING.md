@@ -88,3 +88,13 @@ opens (or updates) a release pull request of its own proposing the next
 version. Merging that pull request is what actually cuts the tag and the
 GitHub release — see `README.md`'s "Two release channels" section for what
 that tag means for the stable `PKGBUILD`.
+
+**A release-please pull request's own checks start stuck on "action
+required"** — every push GitHub's `github-actions[bot]` makes to it needs a
+manual "Approve and run workflows" click (or `gh api -X POST
+repos/<owner>/<repo>/actions/runs/<id>/approve` for each queued run) before
+its `ci`/`gitleaks`/`pr-title` runs actually start. This is GitHub's own
+anti-privilege-escalation gate on any workflow-opened pull request, not a
+bug in this template — nothing here can turn it off from this side, since
+disabling it would mean any workflow with `pull-requests: write` could
+silently approve its own CI.
