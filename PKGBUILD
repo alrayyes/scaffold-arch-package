@@ -37,5 +37,5 @@ build() {
 
 package() {
   cd "scaffold-arch-package-$pkgver"
-  make DESTDIR="$pkgdir" PREFIX=/usr install
+  make DESTDIR="$pkgdir" PREFIX=/usr PKGNAME="$pkgname" install
 }

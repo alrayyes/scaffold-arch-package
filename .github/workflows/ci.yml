@@ -51,9 +51,11 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check .SRCINFO is not stale
+        # No git in this image and none needed — makepkg --printsrcinfo only
+        # reads the PKGBUILD, it doesn't touch .git.
         run: |
           docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
-            bash -c 'git config --global --add safe.directory /repo && ./.ci/check-srcinfo.sh'
+            bash -c './.ci/check-srcinfo.sh'
 
   shellcheck:
     runs-on: ubuntu-latest
