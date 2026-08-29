@@ -1,0 +1,48 @@
+# Maintainer: Ryan Kes <ryan@andthensome.nl>
+#
+# Rolling channel: standard AUR `-git` convention — always builds off
+# `main`, no tag or release required. Package name and directory both carry
+# the `-git` suffix so it can be installed alongside the stable `example`
+# package if someone ever wants both side by side, though `provides`/
+# `conflicts` below mean pacman treats them as the same package for
+# dependency-resolution purposes.
+#
+# Same placeholder note as ../PKGBUILD: this packages the template repo's
+# own demo (example.sh + Makefile) so CI has something real to build.
+
+pkgname=example-git
+pkgver=r1.0000000
+pkgrel=1
+pkgdesc="Demo package built from the scaffold-arch-package template (main, rolling)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/alrayyes/scaffold-arch-package"
+license=('LicenseRef-custom')
+depends=('bash')
+makedepends=('make' 'git')
+provides=("example")
+conflicts=("example")
+source=("$pkgname::git+https://github.com/alrayyes/scaffold-arch-package.git#branch=main")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$pkgname"
+  # `git describe`'s hyphens aren't valid in a pkgver, hence the sed. Piping
+  # straight into sed would mask a `git describe` failure (the pipeline's
+  # exit status is sed's, not git's) so the two branches stay separate
+  # rather than chained with `||` on one line.
+  if git describe --long --tags &>/dev/null; then
+    git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+  else
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  fi
+}
+
+build() {
+  cd "$pkgname"
+  make build
+}
+
+package() {
+  cd "$pkgname"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+}

@@ -1,0 +1,6 @@
+All rights reserved.
+
+This template does not pick a license for the project you build with it —
+that's a decision the project stamped from this template makes, not this
+template. Replace this file with the license your project actually ships
+under, and set PKGBUILD's `license=()` to match, before publishing anywhere.

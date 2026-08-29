@@ -1,0 +1,61 @@
+# The same commands CI runs, so the two cannot drift. The hook catches it
+# early; CI is the gate that cannot be skipped.
+#
+# Grows a job here the same PR that adds the tool it runs — a linter with no
+# hook is a linter you only meet at CI.
+
+# pre-commit may write. Let every fixer run and restage what it touched — a
+# commit should not fail over a quote style a tool can settle by itself.
+#
+# No namcap job here: it needs a real Arch userland, which most
+# contributors' machines aren't. It runs in CI (.ci/build-and-lint.sh,
+# inside a pinned archlinux container) and can be run by hand the same way —
+# see CONTRIBUTING.md.
+pre-commit:
+  jobs:
+    - name: shellcheck
+      glob: "**/*.sh"
+      run: shellcheck {staged_files}
+
+    # Prettier decides the layout, markdownlint then judges what Prettier
+    # produced. The other order has markdownlint fixing something Prettier is
+    # about to overwrite.
+    - name: prettier
+      glob: "*.{md,yml,yaml,json}"
+      run: bunx prettier --write {staged_files}
+      stage_fixed: true
+
+    - name: markdownlint
+      glob: "*.md"
+      run: bunx markdownlint-cli2 {staged_files}
+
+commit-msg:
+  jobs:
+    # Resolved from node_modules rather than fetched by bunx: commitlint has to
+    # load the config its own config extends, and bunx cannot resolve a sibling
+    # package for it. Run `bun install` if this cannot find itself.
+    - name: commitlint
+      run: bunx commitlint --edit {1}
+
+# pre-push never writes. A hook rewriting files under a push leaves the pushed
+# commit and the working tree disagreeing about what was reviewed.
+#
+# Parallel because of that: nothing here touches a file, so no job can be
+# reading what another is rewriting.
+pre-push:
+  parallel: true
+  jobs:
+    # Needs `makepkg` — present on an Arch machine, not elsewhere. CI runs
+    # the identical script inside the pinned archlinux container, so it's
+    # still the last real check even where this hook can't run locally.
+    - name: srcinfo-drift
+      run: ./.ci/check-srcinfo.sh
+
+    # These are `package.json` scripts rather than the commands spelled out,
+    # because CI runs the same ones and a literal copied into two files drifts
+    # the first time somebody edits one of them.
+    - name: prettier
+      run: bun run format:check
+
+    - name: markdownlint
+      run: bun run lint:md

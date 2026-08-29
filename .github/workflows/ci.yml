@@ -1,0 +1,102 @@
+# The gate. Every command in here has a twin in lefthook.yml, so a green
+# pre-commit means a green pipeline and neither can drift into being the only
+# place a rule is enforced.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A second push to the same branch makes the first run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned by digest, not just the "base-devel" tag, so makepkg and namcap
+  # can't drift out from under this workflow between runs. `docker run`
+  # rather than the job-level `container:` key: a container job needs
+  # Node.js already inside the image to run actions/checkout itself, and
+  # this image doesn't have it — running the pinned image as a plain step
+  # sidesteps that instead of layering a nodejs install in front of it.
+  ARCH_IMAGE: archlinux:base-devel@sha256:68bfc3b0d277b08a99101dc9b94aaa03e5ae70cf1b4fb965c03b2b87b915760d
+
+jobs:
+  # Builds and namcap-lints both packages. `example-git` clones this repo's
+  # own `main` over the network from inside the container, so this only
+  # passes once the workflow's own checkout has actually reached GitHub.
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [".", "example-git"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Build and namcap-lint ${{ matrix.package }}
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
+            bash -c './.ci/build-and-lint.sh "${{ matrix.package }}"'
+
+  # A PKGBUILD changes far more often than anyone remembers to regenerate
+  # .SRCINFO by hand — this is the check that they never drift apart.
+  srcinfo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check .SRCINFO is not stale
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
+            bash -c 'git config --global --add safe.directory /repo && ./.ci/check-srcinfo.sh'
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Preinstalled on the ubuntu-latest runner image — no separate action
+      # or install step needed.
+      - run: shellcheck .ci/*.sh example.sh
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - name: bun install
+        # Frozen, so a drifted lockfile fails the job rather than silently
+        # resolving to something nobody committed.
+        run: bun install --frozen-lockfile
+      - name: prettier --check
+        run: bun run format:check
+      - name: markdownlint
+        run: bun run lint:md
+
+  # A hook is something you can skip, and the version number depends on
+  # these messages being right, so the whole branch is checked here too.
+  # pr-title.yml checks the pull request title itself, which this never
+  # sees.
+  commits:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - name: commitlint
+        run: |
+          bunx commitlint \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --verbose

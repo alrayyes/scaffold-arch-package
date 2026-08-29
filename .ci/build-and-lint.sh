@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Builds and namcap-lints one package directory ("." for stable, "example-git"
+# for rolling), inside the pinned archlinux container this runs under in CI.
+# makepkg refuses to run as root, so this creates an unprivileged build user
+# and hands off to it for everything past the one-time root-only setup below.
+set -euo pipefail
+
+dir="${1:?usage: build-and-lint.sh <package-dir>}"
+repo_root="$(pwd)"
+
+pacman -Syu --noconfirm --needed namcap git
+
+if ! id builder &>/dev/null; then
+  useradd -m builder
+fi
+chown -R builder:builder "$repo_root"
+git config --global --add safe.directory "$repo_root"
+
+# The stable PKGBUILD downloads a tagged release tarball. On a freshly
+# bootstrapped template — or any project before its first tag — that source
+# doesn't exist yet on GitHub. Stand in a tarball built from the current
+# checkout so build()/package() still get exercised on every push; a real
+# project only needs this crutch until its first real release ships.
+if [ "$dir" = "." ]; then
+  pkgname=$(awk -F= '/^pkgname=/{print $2; exit}' "$dir/PKGBUILD")
+  pkgver=$(awk -F= '/^pkgver=/{print $2; exit}' "$dir/PKGBUILD" | awk '{print $1}')
+  archive_dir="scaffold-arch-package-$pkgver"
+  work=$(mktemp -d)
+  mkdir -p "$work/$archive_dir"
+  git archive HEAD | tar -x -C "$work/$archive_dir"
+  tar -C "$work" -czf "$dir/$pkgname-$pkgver.tar.gz" "$archive_dir"
+  chown builder:builder "$dir/$pkgname-$pkgver.tar.gz"
+  rm -rf "$work"
+fi
+
+# namcap always exits 0 regardless of what it finds — it's a linter, not a
+# checker with a pass/fail contract — so failing the job on a real ("E:")
+# finding is this script's job, not namcap's. A "W:" warning is printed but
+# doesn't fail the run; some are expected and permanent here, like namcap
+# flagging the stable package's demo script as "not an ELF binary" on an
+# arch it declares as if it built one.
+su builder -c "
+  set -euo pipefail
+  cd '$repo_root/$dir'
+  namcap PKGBUILD | tee /tmp/namcap-pkgbuild.out
+  makepkg --syncdeps --noconfirm
+  namcap ./*.pkg.tar.zst | tee /tmp/namcap-pkg.out
+  ! grep -qE ' E: ' /tmp/namcap-pkgbuild.out /tmp/namcap-pkg.out
+"

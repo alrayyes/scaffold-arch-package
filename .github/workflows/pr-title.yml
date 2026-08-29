@@ -1,0 +1,23 @@
+# commitlint (ci.yml's `commits` job) checks individual commit messages
+# inside a pull request; it never sees the pull request title. On a squash
+# merge, the squash commit message defaults to that title — so a title
+# reading "fixed stuff" squashes straight past commitlint and lands exactly
+# that on main, and release-please reads the landed messages to decide the
+# next version. This is the check standing between a badly titled pull
+# request and a bad message on `main`.
+name: pr-title
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

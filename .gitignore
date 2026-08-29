@@ -1,0 +1,10 @@
+# makepkg build output
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+*.tar.gz
+pkg/
+src/
+
+# bun
+node_modules/
+.bun-cache/

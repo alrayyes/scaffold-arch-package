@@ -1,0 +1,19 @@
+# Enabled from day one, not deferred. A public repo gets unlimited GitHub
+# Actions minutes, so there's no metering reason to wait — and a dependency
+# bump that needs a config change on our side is better caught on the
+# template itself than on day one of the first real project cloned from it.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
