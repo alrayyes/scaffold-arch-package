@@ -15,7 +15,7 @@
 # section for why that's deliberate and what to run afterwards.
 
 pkgname=example
-pkgver=1.0.1 # x-release-please-version
+pkgver=1.0.2 # x-release-please-version
 pkgrel=1
 pkgdesc="Demo package built from the scaffold-arch-package template"
 arch=('x86_64' 'aarch64')
