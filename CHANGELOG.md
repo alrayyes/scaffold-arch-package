@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.2...v1.0.3) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** restore checkout ownership after regenerate-srcinfo.sh's builder chown ([#17](https://github.com/alrayyes/scaffold-arch-package/issues/17)) ([ea440c6](https://github.com/alrayyes/scaffold-arch-package/commit/ea440c6c2b4a5f8a0d212db5cf73e884b432e848)), closes [#16](https://github.com/alrayyes/scaffold-arch-package/issues/16)
+
 ## [1.0.2](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.1...v1.0.2) (2026-09-02)
 
 
