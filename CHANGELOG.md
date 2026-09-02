@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.1...v1.0.2) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** regenerate checksums and .SRCINFO after every release ([#10](https://github.com/alrayyes/scaffold-arch-package/issues/10)) ([99c91e1](https://github.com/alrayyes/scaffold-arch-package/commit/99c91e12386ee112ae03a1881b30e4d1f9ccb320)), closes [#9](https://github.com/alrayyes/scaffold-arch-package/issues/9)
+
 ## [1.0.1](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.0...v1.0.1) (2026-09-02)
 
 
