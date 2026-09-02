@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.0...v1.0.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ci:** add the missing Dependabot auto-merge workflow ([#7](https://github.com/alrayyes/scaffold-arch-package/issues/7)) ([37a3e6d](https://github.com/alrayyes/scaffold-arch-package/commit/37a3e6d0e51a6321367ae89b3d149ffca8bbe292)), closes [#6](https://github.com/alrayyes/scaffold-arch-package/issues/6)
+
 ## 1.0.0 (2026-08-29)
 
 
