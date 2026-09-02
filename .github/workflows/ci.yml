@@ -29,12 +29,21 @@ jobs:
   # Builds and namcap-lints both packages. `example-git` clones this repo's
   # own `main` over the network from inside the container, so this only
   # passes once the workflow's own checkout has actually reached GitHub.
+  #
+  # `.` is skipped on release-please's own PR: its `source=` fetches the
+  # release tarball by tag, and that tag genuinely doesn't exist until this
+  # very PR merges and cuts it. No amount of fixing PKGBUILD/.SRCINFO on the
+  # PR itself changes that -- `regenerate-release-metadata` (release-please.yml)
+  # validates the real thing post-merge, once the tag is real. `example-git`
+  # has no such dependency (its pkgver() derives from `git describe` against
+  # the already-existing repo, not a not-yet-created tag) and still runs.
   build:
     strategy:
       fail-fast: false
       matrix:
         package: [".", "example-git"]
     runs-on: ubuntu-latest
+    if: matrix.package != '.' || !startsWith(github.head_ref, 'release-please--')
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,8 +55,16 @@ jobs:
 
   # A PKGBUILD changes far more often than anyone remembers to regenerate
   # .SRCINFO by hand — this is the check that they never drift apart.
+  #
+  # Skipped on release-please's own PR for the same reason as `build (.)`
+  # above: release-please bumps pkgver in PKGBUILD but the checksum
+  # embedded in both PKGBUILD and .SRCINFO can't be the real one yet (the
+  # tag it's computed against doesn't exist pre-merge), so this check would
+  # only ever confirm PKGBUILD and .SRCINFO agree on a checksum both know
+  # is a placeholder -- not worth pretending to validate.
   srcinfo:
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check .SRCINFO is not stale
