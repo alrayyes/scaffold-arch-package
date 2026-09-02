@@ -14,12 +14,67 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  ARCH_IMAGE: archlinux:base-devel@sha256:68bfc3b0d277b08a99101dc9b94aaa03e5ae70cf1b4fb965c03b2b87b915760d
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  # release-please bumps PKGBUILD's pkgver via its x-release-please-version
+  # extra-files marker, but has no idea .SRCINFO or sha256sums exist --
+  # every release landed with a stale .SRCINFO and a checksum still pointing
+  # at the previous version's tarball, immediately failing ci.yml's own
+  # staleness/build checks on the very next push. Confirmed live on v1.0.1.
+  regenerate-release-metadata:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Update checksums and regenerate .SRCINFO
+        run: |
+          docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
+            bash -c './.ci/regenerate-srcinfo.sh'
+
+      # Same shape as backup-git-repos'/tempus-fugit's "only open a PR if
+      # something actually changed" jobs -- a no-op release (a version
+      # bump that somehow left everything already correct) shouldn't open
+      # an empty PR.
+      - name: Open and auto-merge a PR if anything changed
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- PKGBUILD .SRCINFO example-git/.SRCINFO; then
+            exit 0
+          fi
+
+          branch="chore/release-metadata-${{ needs.release-please.outputs.tag_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add PKGBUILD .SRCINFO example-git/.SRCINFO
+          git commit -m "chore: update checksums and .SRCINFO for ${{ needs.release-please.outputs.tag_name }}"
+          git push origin "$branch"
+
+          pr_url=$(gh pr create --base main --head "$branch" \
+            --title "chore: update checksums and .SRCINFO for ${{ needs.release-please.outputs.tag_name }}" \
+            --body "release-please bumped pkgver but has no idea .SRCINFO or sha256sums need recomputing.")
+          gh pr merge --auto --squash "$pr_url"
