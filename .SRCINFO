@@ -1,6 +1,6 @@
 pkgbase = example
 	pkgdesc = Demo package built from the scaffold-arch-package template
-	pkgver = 1.0.1
+	pkgver = 1.0.2
 	pkgrel = 1
 	url = https://github.com/alrayyes/scaffold-arch-package
 	arch = x86_64
@@ -8,7 +8,7 @@ pkgbase = example
 	license = LicenseRef-custom
 	makedepends = make
 	depends = bash
-	source = example-1.0.1.tar.gz::https://github.com/alrayyes/scaffold-arch-package/archive/refs/tags/v1.0.1.tar.gz
-	sha256sums = af7cb22486afad7ce7195c4dc04e58e7bd522b14483dc410e4dd909cd9247920
+	source = example-1.0.2.tar.gz::https://github.com/alrayyes/scaffold-arch-package/archive/refs/tags/v1.0.2.tar.gz
+	sha256sums = 14fb29ff3946d63a03190d344d43ea4111d3d19bd3e7a416c2a13e7f9a1c0998
 
 pkgname = example
