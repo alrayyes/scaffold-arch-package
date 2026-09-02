@@ -43,12 +43,16 @@ jobs:
       matrix:
         package: [".", "example-git"]
     runs-on: ubuntu-latest
-    if: matrix.package != '.' || !startsWith(github.head_ref, 'release-please--')
     steps:
+      # matrix isn't available in a job-level if: (confirmed via actionlint),
+      # so the skip has to live on both steps instead -- a job with every
+      # step skipped still reports as skipped overall.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: matrix.package != '.' || !startsWith(github.head_ref, 'release-please--')
         with:
           fetch-depth: 0
       - name: Build and namcap-lint ${{ matrix.package }}
+        if: matrix.package != '.' || !startsWith(github.head_ref, 'release-please--')
         run: |
           docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
             bash -c './.ci/build-and-lint.sh "${{ matrix.package }}"'
