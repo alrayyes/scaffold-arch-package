@@ -25,7 +25,7 @@
 # the version-collision half of that class of bug regardless of shape.
 
 pkgname=example
-pkgver=1.0.3 # x-release-please-version
+pkgver=1.0.4 # x-release-please-version
 pkgrel=1
 pkgdesc="Demo package built from the scaffold-arch-package template"
 arch=('x86_64' 'aarch64')
