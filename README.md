@@ -71,9 +71,14 @@ tag automatically. That bump does **not** regenerate `.SRCINFO` or the
 pull request:
 
 ```sh
-makepkg --printsrcinfo > .SRCINFO   # after PKGBUILD's pkgver changed
 updpkgsums                          # real checksum against the new tag's tarball
+makepkg --printsrcinfo > .SRCINFO   # after PKGBUILD's pkgver AND sha256sums changed
 ```
+
+`updpkgsums` first, `.SRCINFO` last — reversing this order regenerates `.SRCINFO`
+against the old checksum and leaves it stale on the `sha256sums` line alone,
+which `check-srcinfo.sh` then fails on separately from the `pkgver` drift it's
+actually meant to catch.
 
 (`updpkgsums` ships in `pacman-contrib`.) `example-git` needs none of this —
 it has no release step; it always builds off whatever `main` currently is.
