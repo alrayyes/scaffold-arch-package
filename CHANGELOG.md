@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.3...v1.0.4) (2026-09-03)
+
+
+### Bug Fixes
+
+* **ci:** regenerate .SRCINFO for 1.0.3 and fix the update order in the docs ([#22](https://github.com/alrayyes/scaffold-arch-package/issues/22)) ([d90b5d5](https://github.com/alrayyes/scaffold-arch-package/commit/d90b5d55c97b92173e052124ab295b454da540b7)), closes [#20](https://github.com/alrayyes/scaffold-arch-package/issues/20)
+
 ## [1.0.3](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.2...v1.0.3) (2026-09-02)
 
 
