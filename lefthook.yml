@@ -51,6 +51,11 @@ pre-push:
     - name: srcinfo-drift
       run: ./.ci/check-srcinfo.sh
 
+    # Pure text inspection, no makepkg needed — runs everywhere this hook
+    # does, unlike srcinfo-drift above.
+    - name: source-filenames
+      run: ./.ci/check-source-filenames.sh
+
     # These are `package.json` scripts rather than the commands spelled out,
     # because CI runs the same ones and a literal copied into two files drifts
     # the first time somebody edits one of them.

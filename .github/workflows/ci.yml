@@ -78,6 +78,16 @@ jobs:
           docker run --rm -v "$PWD":/repo -w /repo "$ARCH_IMAGE" \
             bash -c './.ci/check-srcinfo.sh'
 
+  # A source entry whose local name doesn't carry $pkgver even though its
+  # URL does collides across versions in makepkg's source cache -- see
+  # rules/packaging.md and check-source-filenames.sh's own comment for the
+  # mechanism. Pure text inspection, no makepkg/docker needed.
+  source-filenames:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: ./.ci/check-source-filenames.sh
+
   shellcheck:
     runs-on: ubuntu-latest
     steps:
