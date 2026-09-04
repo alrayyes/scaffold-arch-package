@@ -43,6 +43,7 @@ jobs:
       matrix:
         package: [".", "example-git"]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       # matrix isn't available in a job-level if: (confirmed via actionlint),
       # so the skip has to live on both steps instead -- a job with every
@@ -68,6 +69,7 @@ jobs:
   # is a placeholder -- not worth pretending to validate.
   srcinfo:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,12 +86,14 @@ jobs:
   # mechanism. Pure text inspection, no makepkg/docker needed.
   source-filenames:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: ./.ci/check-source-filenames.sh
 
   shellcheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Preinstalled on the ubuntu-latest runner image — no separate action
@@ -98,6 +102,7 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -119,6 +124,7 @@ jobs:
   commits:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
