@@ -17,6 +17,7 @@ concurrency:
 jobs:
   secrets:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       # fetch-depth: 0, or there's no history to walk and the job passes
       # having scanned nothing.
