@@ -14,6 +14,11 @@ on:
 permissions:
   pull-requests: read
 
+# A new push to the same pull request makes the previous check pointless.
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest

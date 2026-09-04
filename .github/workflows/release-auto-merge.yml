@@ -14,6 +14,11 @@ permissions:
   contents: write
   pull-requests: write
 
+# A new push to the same pull request makes the previous run pointless.
+concurrency:
+  group: release-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   auto-merge:
     # release-please labels its own pull request "autorelease: pending"
