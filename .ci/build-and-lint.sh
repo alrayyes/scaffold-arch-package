@@ -44,7 +44,23 @@ if [ "$dir" = "." ]; then
       echo "${source[0]#*::}"
     '
   )
-  if ! curl --fail --silent --show-error --output /dev/null --head "$source_url"; then
+  # A HEAD (or even a GET) right after release-please pushes the tag isn't
+  # proof the GET makepkg is about to do will succeed: codeload.github.com
+  # generates tag archives on demand and lags tag creation by a few seconds,
+  # so a probe that races the tag push can see the tag ref (HEAD succeeds)
+  # while the archive itself still 404s. Confirmed live on v1.0.5 - the HEAD
+  # check passed and makepkg's own download 404'd two seconds later. Retry a
+  # real GET, not a single HEAD, before falling back to the stand-in.
+  source_ready=false
+  for _ in 1 2 3 4 5; do
+    if curl --fail --silent --show-error --output /dev/null "$source_url"; then
+      source_ready=true
+      break
+    fi
+    sleep 3
+  done
+
+  if [ "$source_ready" = false ]; then
     echo "no real release at $source_url yet - building a stand-in tarball from HEAD"
     archive_dir="scaffold-arch-package-$pkgver"
     work=$(mktemp -d)
