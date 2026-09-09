@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.4...v1.0.5) (2026-09-09)
+
+
+### Bug Fixes
+
+* **deps:** downgrade bun.lock to lockfileVersion 1 for Dependabot ([#35](https://github.com/alrayyes/scaffold-arch-package/issues/35)) ([211a58a](https://github.com/alrayyes/scaffold-arch-package/commit/211a58a042e1c39c4b81541159fbd9863ab0b85d))
+
 ## [1.0.4](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.3...v1.0.4) (2026-09-03)
 
 
