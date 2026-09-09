@@ -28,7 +28,22 @@ if [ "$(id -u)" -eq 0 ]; then
   exit
 fi
 
-(cd . && updpkgsums)
+# codeload.github.com generates tag archives on demand and can lag a
+# freshly pushed tag by a few seconds -- updpkgsums downloading that
+# tarball to compute its checksum races that lag right after
+# release-please tags a release. Confirmed live on v1.0.5: this step
+# 404'd, so no checksums-update PR was ever opened and main was left with
+# .SRCINFO and sha256sums still pointing at the previous release. Retry
+# before giving up, same fix as build-and-lint.sh's own probe.
+attempt=0
+until (cd . && updpkgsums); do
+  attempt=$((attempt + 1))
+  if [ "$attempt" -ge 5 ]; then
+    echo "updpkgsums still failing after $attempt attempts" >&2
+    exit 1
+  fi
+  sleep 3
+done
 
 for dir in . example-git; do
   (cd "$dir" && makepkg --printsrcinfo > .SRCINFO)
