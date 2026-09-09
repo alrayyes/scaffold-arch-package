@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.5...v1.0.6) (2026-09-09)
+
+
+### Bug Fixes
+
+* **ci:** retry the release-tarball probe instead of trusting one HEAD ([#39](https://github.com/alrayyes/scaffold-arch-package/issues/39)) ([182e013](https://github.com/alrayyes/scaffold-arch-package/commit/182e01373fc4f68e3f1ffb989f80042e565e5742))
+
 ## [1.0.5](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.4...v1.0.5) (2026-09-09)
 
 
