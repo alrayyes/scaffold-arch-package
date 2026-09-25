@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.7](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.6...v1.0.7) (2026-09-25)
+
+
+### Bug Fixes
+
+* **deps:** use bun ecosystem in dependabot.yml, not npm ([67681fa](https://github.com/alrayyes/scaffold-arch-package/commit/67681faa070fbe2f6d0364b045047cd33dd61925))
+* **deps:** use bun ecosystem in dependabot.yml, not npm ([eed9f36](https://github.com/alrayyes/scaffold-arch-package/commit/eed9f36b4ca02457b48fbdcc6eee8135b1ba9328)), closes [#48](https://github.com/alrayyes/scaffold-arch-package/issues/48)
+
 ## [1.0.6](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.5...v1.0.6) (2026-09-09)
 
 
