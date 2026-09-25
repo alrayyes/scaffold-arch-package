@@ -4,16 +4,34 @@
 # template itself than on day one of the first real project cloned from it.
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
+    commit-message:
+      # github-actions changes the pipeline, not what ships, so this stays
+      # ci: rather than fix: — see releases.md's "Dependency bots" section.
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # Nothing here is JavaScript — package.json exists so commitlint can
+  # resolve the shared config it extends, which bunx alone cannot do.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      tooling:
+        patterns: ["*"]
+        update-types: [minor, patch]
