@@ -22,7 +22,7 @@ updates:
 
   # Nothing here is JavaScript — package.json exists so commitlint can
   # resolve the shared config it extends, which bunx alone cannot do.
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
