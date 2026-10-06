@@ -5,9 +5,8 @@ for packaging a project as an Arch Linux (`pacman`) package: two working
 `PKGBUILD`s, CI that actually builds and lints both, and everything needed
 to publish the result to the AUR.
 
-It's the GitHub-native sibling of
-[`alrayyes/scaffold-arch-package`](https://git.higherlearning.eu/alrayyes/scaffold-arch-package)
-on Forgejo — same packaging design, `.github/workflows/` instead of
+It's the GitHub-native sibling of a template of the same name on a private
+Forgejo instance — same packaging design, `.github/workflows/` instead of
 `.forgejo/workflows/`, [release-please](https://github.com/googleapis/release-please)
 instead of semantic-release, [Dependabot](https://docs.github.com/en/code-security/dependabot)
 instead of Renovate.
