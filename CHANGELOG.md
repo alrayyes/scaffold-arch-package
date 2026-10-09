@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.7...v1.0.8) (2026-10-09)
+
+
+### Bug Fixes
+
+* **hooks:** lint only staged files with markdownlint ([#58](https://github.com/alrayyes/scaffold-arch-package/issues/58)) ([c074dbf](https://github.com/alrayyes/scaffold-arch-package/commit/c074dbf009adbd67d9aaf7910277c28b4e487ee5))
+
 ## [1.0.7](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.6...v1.0.7) (2026-09-25)
 
 
