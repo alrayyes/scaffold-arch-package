@@ -38,7 +38,7 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/alrayyes/scaffold-arch-pack
 # README.md's "Publishing to the AUR" section. The AUR rejects SKIP on a
 # non-VCS source, so this has to become a real sha256sum (`updpkgsums`)
 # before this ever gets pushed there.
-sha256sums=('96579a2fba2afa4d6212f8b1427670cdef4e131b25641829b92a210efcdafab6')
+sha256sums=('30b2deb3bb226b57bcebd6a727884faa5cbd3f18835644bb6ff61f67ff5983fa')
 
 build() {
   cd "scaffold-arch-package-$pkgver"
