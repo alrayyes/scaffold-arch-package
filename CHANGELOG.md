@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.8...v1.0.9) (2026-10-15)
+
+
+### Bug Fixes
+
+* **ci:** run release-auto-merge when the autorelease label is added ([#63](https://github.com/alrayyes/scaffold-arch-package/issues/63)) ([b7b8a89](https://github.com/alrayyes/scaffold-arch-package/commit/b7b8a894dd79f882637756a9a2523700fdb53dfa)), closes [#62](https://github.com/alrayyes/scaffold-arch-package/issues/62)
+
 ## [1.0.8](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.7...v1.0.8) (2026-10-09)
 
 
