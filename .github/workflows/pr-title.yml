@@ -15,8 +15,12 @@ permissions:
   pull-requests: read
 
 # A new push to the same pull request makes the previous check pointless.
+# The head commit is part of the group. A rebase fires several events in the
+# same second, and one can carry the previous head; grouped by pull request
+# alone, that run cancels the one for the new head, which then never reports
+# the required check.
 concurrency:
-  group: pr-title-${{ github.event.pull_request.number }}
+  group: pr-title-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: true
 
 jobs:
