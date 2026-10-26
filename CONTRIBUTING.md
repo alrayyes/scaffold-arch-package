@@ -19,6 +19,8 @@ for whoever generates a project from it.
   does, given Arch or Docker.
 - **[ShellCheck](https://www.shellcheck.net)** on your `PATH` for the shell
   scripts under `.ci/`.
+- **[gitleaks](https://github.com/gitleaks/gitleaks)** on your `PATH` for the
+  secret scan the hooks run. CI runs it from a pinned container image.
 
 One command installs the JS-side linters and the git hooks:
 
@@ -37,6 +39,7 @@ Every one of these is what a hook or CI runs — see `lefthook.yml` and
 
 ```sh
 shellcheck .ci/*.sh
+gitleaks git --redact --no-banner
 namcap PKGBUILD
 namcap example-git/PKGBUILD
 

@@ -18,14 +18,20 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Pinned by digest. The image's entrypoint is gitleaks, so clear it to get a
+    # shell back for the steps below.
+    container:
+      image: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+      options: --entrypoint ""
     steps:
+      # The image has no node, which checkout needs.
+      - run: apk add --no-cache nodejs
       # fetch-depth: 0, or there's no history to walk and the job passes
       # having scanned nothing.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      # Free for a public repo — GITLEAKS_LICENSE is only required on a
-      # private one.
-      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # A fresh clone in a container owned by another user trips git's safe.directory.
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # The history is small, so scan all of it every time (rules/secrets.md).
+      - run: gitleaks git --redact --no-banner
