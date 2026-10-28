@@ -25,10 +25,13 @@ permissions:
   contents: write
   pull-requests: write
 
-# A new push to the same pull request makes the previous run pointless.
+# Queue, don't cancel: release-please opens the pull request and labels it a
+# moment later, so the opened run skips and the labeled run lands in the same
+# group. Cancelling in progress killed the labeled run, the only one that
+# arms auto-merge. Re-arming is idempotent, so a queued run is harmless.
 concurrency:
   group: release-auto-merge-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   auto-merge:
