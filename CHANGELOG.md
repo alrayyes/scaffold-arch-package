@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.10](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.9...v1.0.10) (2026-10-28)
+
+
+### Bug Fixes
+
+* **ci:** stop release-auto-merge cancelling its own labeled run ([#73](https://github.com/alrayyes/scaffold-arch-package/issues/73)) ([4355056](https://github.com/alrayyes/scaffold-arch-package/commit/435505644ae6e830d476152bf378f220d97486d9))
+
 ## [1.0.9](https://github.com/alrayyes/scaffold-arch-package/compare/v1.0.8...v1.0.9) (2026-10-15)
 
 
