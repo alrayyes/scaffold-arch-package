@@ -1,8 +1,7 @@
 # Dependabot has no built-in auto-merge either. Same gate as
 # release-auto-merge.yml: wait for the same checks every other pull
 # request waits for, then arm auto-merge the same way a human would from
-# the UI. Patch and minor only -- a major stays a pull request someone
-# reads.
+# the UI. Every update type, majors included.
 #
 # pull_request, not pull_request_target: Dependabot's pull request comes
 # from a branch on this repo, never a fork, so there's no untrusted
@@ -26,16 +25,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable auto-merge for patch and minor updates
-        if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+      - name: Enable auto-merge
         run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
