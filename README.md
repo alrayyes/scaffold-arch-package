@@ -156,3 +156,24 @@ automate on your behalf.
 `main` requires a pull request before merging — nothing merges without a
 passing `ci` run. Dependabot watches `package.json` (via the `npm`
 ecosystem) and the GitHub Actions pins in `.github/workflows/`, both weekly.
+
+## Actions event policy
+
+The workflows here use `pull_request_target`, which GitHub's default Actions
+policy blocks on public repos from 2026-12-02. A new public repo made from this
+template needs a per-repo policy allowing the events its workflows use, or
+those workflows end in `startup_failure`:
+
+```sh
+gh api -X POST repos/<owner>/<repo>/actions/policies --input - <<'JSON'
+{"name":"allow-pull_request_target","enforcement":"active",
+ "rules":[{"type":"restrict_action_events",
+           "parameters":{"allowed_events":["pull_request_target","pull_request","push"]}}]}
+JSON
+```
+
+`allowed_events` is an allow-list: add every other event a workflow uses
+(`schedule`, `workflow_dispatch`, `workflow_run`, `release` and so on), or it
+stops firing. A later change to an existing policy is made in the UI under
+Settings > Actions > Policies. See the
+[GitHub docs](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target).
